@@ -24,6 +24,10 @@ const EditProject = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [screenshots, setScreenshots] = useState<Screenshot[]>([]);
 
+  const [newTechnologies, setNewTechnologies] = useState<
+    Omit<Technology, 'id'>[] | []
+  >([]);
+
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,9 +37,35 @@ const EditProject = () => {
 
     setMessage('loading');
 
-    const { data } = await api.updateProject(params.id, project);
+    let newProject = { ...project };
+    let createdTechnologies: Technology[] = [];
+
+    if (newTechnologies.length) {
+      // create new technologies then add it to project
+      const createTechs = async () => {
+        let ids: number[] = [];
+
+        for (const nt of newTechnologies) {
+          const { data } = await api.createTechnology(nt);
+          ids.push(data.id);
+          createdTechnologies.push(data);
+        }
+
+        return Promise.resolve(ids);
+      };
+
+      const newTechIds = await createTechs();
+      newProject.technologies = newProject.technologies.concat(newTechIds);
+    }
+
+    const { data } = await api.updateProject(params.id, newProject);
 
     setProject(data);
+
+    // replace newTechnologies to newly created technologies
+    setTechnologies(technologies.concat(createdTechnologies));
+    setNewTechnologies([]);
+
     setMessage('success');
   };
 
@@ -148,6 +178,36 @@ const EditProject = () => {
             {technology.name}
           </React.Fragment>
         ))}
+
+        {newTechnologies.map((newTechnology, idx) => (
+          <React.Fragment key={idx}>
+            <input
+              type="checkbox"
+              name="technologies"
+              onChange={(e) => {
+                if (e.target.checked) return;
+                setNewTechnologies(
+                  newTechnologies.filter((nt) => nt.name !== newTechnology.name)
+                );
+              }}
+              checked={true}
+            />
+            {newTechnology.name}
+          </React.Fragment>
+        ))}
+        <input
+          type="text"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              setNewTechnologies([
+                ...newTechnologies,
+                { name: (e.target as HTMLInputElement).value },
+              ]);
+              (e.target as HTMLInputElement).value = '';
+            }
+          }}
+        />
       </div>
       <div>
         {categories.map((category) => (

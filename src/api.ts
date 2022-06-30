@@ -1,7 +1,7 @@
 import { generatePath } from 'react-router-dom';
 import routes from './routes';
 import axios, { axiosPrivate } from './axios';
-import { Project } from './typings';
+import { Project, Technology } from './typings';
 
 export const updateProject = (id: string, project: Project) =>
   axiosPrivate.put(
@@ -24,6 +24,9 @@ export const getTechnologies = (ids: number[] = []) =>
       ids,
     },
   });
+
+export const createTechnology = (technology: Omit<Technology, 'id'>) =>
+  axiosPrivate.post(routes.technologyList, technology);
 
 export const getCategories = (ids: number[] = []) =>
   axios.get(routes.categoryList, {

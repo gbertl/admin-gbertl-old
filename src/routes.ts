@@ -12,7 +12,7 @@ const routes = {
   get projectEdit() {
     return `${this.projectDetail}edit`;
   },
-  technologyList: '/technologies',
+  technologyList: '/technologies/',
   categoryList: '/categories',
   screenshotList: '/screenshots',
 };
