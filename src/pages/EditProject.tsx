@@ -183,7 +183,6 @@ const EditProject = () => {
           <React.Fragment key={idx}>
             <input
               type="checkbox"
-              name="technologies"
               onChange={(e) => {
                 if (e.target.checked) return;
                 setNewTechnologies(
