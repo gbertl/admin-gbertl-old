@@ -11,6 +11,7 @@ const Home = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   const handleDelete = async (id: number) => {
+    if (!window.confirm('Are you sure want to delete this?')) return;
     await api.deleteProject(id.toString());
     setProjects(projects.filter((project) => project.id !== id));
   };
