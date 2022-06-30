@@ -14,6 +14,8 @@ const useSetupInterceptor = () => {
       async (error) => {
         const config = error.config;
         if (error.response.status === 401) {
+          if (location.pathname.includes(routes.login)) return;
+
           const refreshToken = localStorage.getItem('refreshToken');
 
           if (refreshToken) {
