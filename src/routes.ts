@@ -1,12 +1,20 @@
 const routes = {
+  login: '/login',
+  token: '/token/',
+  get refreshToken() {
+    return `${this.token}refresh/`;
+  },
   home: '/',
-  projectsList: '/projects',
-  get projectsDetail() {
-    return `${this.projectsList}/:id`;
+  projectList: '/projects',
+  get projectDetail() {
+    return `${this.projectList}/:id/`;
   },
-  get projectsEdit() {
-    return `${this.projectsDetail}/edit`;
+  get projectEdit() {
+    return `${this.projectDetail}edit`;
   },
+  technologyList: '/technologies',
+  categoryList: '/categories',
+  screenshotList: '/screenshots',
 };
 
 export default routes;

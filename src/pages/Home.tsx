@@ -1,4 +1,3 @@
-import axios from '../axios';
 import { useEffect, useState } from 'react';
 import { Project } from '../typings';
 import Container from 'react-bootstrap/Container';
@@ -6,14 +5,19 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { generatePath, Link } from 'react-router-dom';
 import routes from '../routes';
+import * as api from '../api';
 
 const Home = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
+  const handleDelete = async (id: number) => {
+    await api.deleteProject(id.toString());
+    setProjects(projects.filter((project) => project.id !== id));
+  };
+
   useEffect(() => {
     const fetchProjects = async () => {
-      const { data } = await axios.get(routes.projectsList);
-
+      const { data } = await api.getProjects();
       setProjects(data);
     };
     fetchProjects();
@@ -32,12 +36,12 @@ const Home = () => {
           </thead>
           <tbody>
             {projects.map((project) => (
-              <tr>
+              <tr key={project.id}>
                 <td>{project.title}</td>
                 <td>{project.priority_order}</td>
                 <td className="d-flex gap-1">
                   <Link
-                    to={generatePath(routes.projectsDetail, {
+                    to={generatePath(routes.projectDetail, {
                       id: project.id.toString(),
                     })}
                     className="btn btn-info"
@@ -45,14 +49,19 @@ const Home = () => {
                     View
                   </Link>
                   <Link
-                    to={generatePath(routes.projectsEdit, {
+                    to={generatePath(routes.projectEdit, {
                       id: project.id.toString(),
                     })}
                     className="btn btn-warning"
                   >
                     Edit
                   </Link>
-                  <Button variant="danger">Delete</Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleDelete(project.id)}
+                  >
+                    Delete
+                  </Button>
                 </td>
               </tr>
             ))}

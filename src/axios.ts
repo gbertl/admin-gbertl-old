@@ -5,8 +5,14 @@ const baseURL =
     ? 'https://gilbertlc-api.herokuapp.com/api'
     : 'http://localhost:8000/api';
 
-const instance = axios.create({
+export const axiosPrivate = axios.create({
   baseURL,
 });
 
-export default instance;
+axiosPrivate.defaults.headers.common[
+  'Authorization'
+] = `Bearer ${localStorage.getItem('accessToken')}`;
+
+export default axios.create({
+  baseURL,
+});

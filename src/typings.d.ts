@@ -7,4 +7,24 @@ export interface Project {
   priority_order: number;
   technologies: number[];
   categories: number[];
+  screenshots: number[];
+}
+
+export interface Technology {
+  id: number;
+  name: string;
+}
+
+export interface Category {
+  id: number;
+  title: string;
+  name: string;
+  priority_order: number;
+}
+
+export interface Screenshot {
+  id: number;
+  image: string;
+  priority_order: number;
+  project: number;
 }
