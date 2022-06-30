@@ -18,7 +18,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      const { data } = await api.getProjects();
+      const { data } = await api.getProjects(['priority_order']);
       setProjects(data);
     };
     fetchProjects();
@@ -27,7 +27,7 @@ const Home = () => {
   return (
     <section className="home">
       <Container>
-        <Table striped>
+        <Table responsive="sm" striped>
           <thead>
             <tr>
               <th>Title</th>

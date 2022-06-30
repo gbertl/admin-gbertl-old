@@ -42,7 +42,12 @@ export const getScreenshots = (ids: number[] = []) =>
 export const deleteProject = (id: string) =>
   axiosPrivate.delete(generatePath(routes.projectDetail, { id }));
 
-export const getProjects = () => axios.get(routes.projectList);
+export const getProjects = (ordering: string[] = []) =>
+  axios.get(routes.projectList, {
+    params: {
+      ordering,
+    },
+  });
 
 export const login = async (username: string, password: string) => {
   try {
