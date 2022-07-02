@@ -15,35 +15,27 @@ const ProjectDetail = () => {
   const [categories, setCategories] = useState<Category[]>();
 
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchAll = async () => {
       if (!params.id) return;
-      const { data } = await api.getProject(params.id);
-      setProject(data);
-    };
-
-    fetchProject();
-  }, []);
-
-  useEffect(() => {
-    if (!project) return;
-
-    const fetchAllRelated = async () => {
+      const { data: projectData } = await api.getProject(params.id);
       const [
         { data: screenshotsData },
         { data: technologiesData },
         { data: categoriesData },
       ] = await Promise.all([
-        api.getScreenshots(project.screenshots),
-        api.getTechnologies(project.technologies),
-        api.getCategories(project.categories),
+        api.getScreenshots(projectData.screenshots),
+        api.getTechnologies(projectData.technologies),
+        api.getCategories(projectData.categories),
       ]);
+
+      setProject(projectData);
       setScreenshots(screenshotsData);
       setTechnologies(technologiesData);
       setCategories(categoriesData);
     };
 
-    fetchAllRelated();
-  }, [project]);
+    fetchAll();
+  }, []);
 
   return (
     <section className="project-detail">
