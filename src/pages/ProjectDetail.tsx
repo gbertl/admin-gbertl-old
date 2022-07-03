@@ -1,41 +1,40 @@
-import { useEffect, useState } from 'react';
-import { generatePath, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Category, Project, Screenshot, Technology } from '../typings';
-import axios from '../axios';
-import routes from '../routes';
 import { Container, ListGroup } from 'react-bootstrap';
 import '../scss/components/project-detail.scss';
 import * as api from '../api';
+import { useQuery } from 'react-query';
 
 const ProjectDetail = () => {
   const params = useParams();
-  const [project, setProject] = useState<Project>();
-  const [screenshots, setScreenshots] = useState<Screenshot[]>();
-  const [technologies, setTechnologies] = useState<Technology[]>();
-  const [categories, setCategories] = useState<Category[]>();
-
-  useEffect(() => {
-    const fetchAll = async () => {
-      if (!params.id) return;
-      const { data: projectData } = await api.getProject(params.id);
-      const [
-        { data: screenshotsData },
-        { data: technologiesData },
-        { data: categoriesData },
-      ] = await Promise.all([
-        api.getScreenshots(projectData.screenshots),
-        api.getTechnologies(projectData.technologies),
-        api.getCategories(projectData.categories),
-      ]);
-
-      setProject(projectData);
-      setScreenshots(screenshotsData);
-      setTechnologies(technologiesData);
-      setCategories(categoriesData);
-    };
-
-    fetchAll();
-  }, []);
+  const { data: project } = useQuery<Project, Error>(
+    'project',
+    async () => (await api.getProject(parseInt(params.id || ''))).data,
+    {
+      enabled: !!params.id,
+    }
+  );
+  const { data: screenshots } = useQuery<Screenshot[], Error>(
+    'screenshots',
+    async () => (await api.getScreenshots(project?.screenshots)).data,
+    {
+      enabled: !!project?.screenshots.length,
+    }
+  );
+  const { data: technologies } = useQuery<Technology[], Error>(
+    'technologies',
+    async () => (await api.getTechnologies(project?.technologies)).data,
+    {
+      enabled: !!project?.technologies.length,
+    }
+  );
+  const { data: categories } = useQuery<Category[], Error>(
+    'categories',
+    async () => (await api.getCategories(project?.categories)).data,
+    {
+      enabled: !!project?.categories.length,
+    }
+  );
 
   return (
     <section className="project-detail">
