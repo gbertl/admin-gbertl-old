@@ -24,7 +24,7 @@ const Home = () => {
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('Are you sure want to delete this?')) return;
-    deleteProject(id.toString());
+    deleteProject(id);
   };
 
   return (

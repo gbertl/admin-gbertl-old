@@ -58,7 +58,7 @@ const EditProject = () => {
       newProject.technologies = newProject.technologies.concat(newTechIds);
     }
 
-    const { data } = await api.updateProject(params.id, newProject);
+    const { data } = await api.updateProject(parseInt(params.id), newProject);
 
     setProject(data);
 
@@ -103,7 +103,7 @@ const EditProject = () => {
         { data: categoryData },
         { data: screenshotData },
       ] = await Promise.all([
-        api.getProject(params.id),
+        api.getProject(parseInt(params.id)),
         api.getTechnologies(),
         api.getCategories(),
         api.getScreenshots(),

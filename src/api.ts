@@ -3,18 +3,18 @@ import routes from './routes';
 import axios, { axiosPrivate } from './axios';
 import { Project, Technology } from './typings';
 
-export const updateProject = (id: string, project: Project) =>
+export const updateProject = (id: number, project: Project) =>
   axiosPrivate.put(
     generatePath(routes.projectDetail, {
-      id,
+      id: id.toString(),
     }),
     project
   );
 
-export const getProject = (id: string) =>
+export const getProject = (id: number) =>
   axios.get(
     generatePath(routes.projectDetail, {
-      id,
+      id: id.toString(),
     })
   );
 
@@ -42,8 +42,10 @@ export const getScreenshots = (ids: number[] = []) =>
     },
   });
 
-export const deleteProject = (id: string) =>
-  axiosPrivate.delete(generatePath(routes.projectDetail, { id }));
+export const deleteProject = (id: number) =>
+  axiosPrivate.delete(
+    generatePath(routes.projectDetail, { id: id.toString() })
+  );
 
 export const getProjects = (ordering: string[] = []) =>
   axios.get(routes.projectList, {
