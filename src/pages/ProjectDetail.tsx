@@ -50,16 +50,18 @@ const ProjectDetail = () => {
             <span className="fw-bold">Description</span> {project?.description}
           </ListGroup.Item>
           <ListGroup.Item>
-            <span className="fw-bold">Live</span> {project?.live_preview}
+            <span className="fw-bold">Live preview</span>{' '}
+            {project?.live_preview}
           </ListGroup.Item>
           <ListGroup.Item>
-            <span className="fw-bold">Source</span> {project?.source_code}
+            <span className="fw-bold">Source code</span> {project?.source_code}
           </ListGroup.Item>
           <ListGroup.Item>
-            <span className="fw-bold">Order</span> {project?.priority_order}
+            <span className="fw-bold">Priority order</span>{' '}
+            {project?.priority_order}
           </ListGroup.Item>
           <ListGroup.Item>
-            <span className="fw-bold">Techs</span>{' '}
+            <span className="fw-bold">Technologies</span>{' '}
             <ul>
               {technologies?.map((technology) => (
                 <li>{technology.name}</li>
@@ -75,10 +77,12 @@ const ProjectDetail = () => {
             </ul>
           </ListGroup.Item>
           <ListGroup.Item>
-            <span className="fw-bold">Screenshots</span>{' '}
-            {screenshots?.map((screenshot) => (
-              <img src={screenshot.image} alt="screenshot" width={200} />
-            ))}
+            <div className="fw-bold mb-1">Screenshots</div>
+            <div className="d-flex gap-2 flex-wrap">
+              {screenshots?.map((screenshot) => (
+                <img src={screenshot.image} alt="screenshot" width={200} />
+              ))}
+            </div>
           </ListGroup.Item>
         </ListGroup>
       </Container>
