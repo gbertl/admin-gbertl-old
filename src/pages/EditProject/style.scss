@@ -1,0 +1,15 @@
+.project-form {
+  &__form {
+    max-width: 581px;
+  }
+
+  &__screenshots {
+    width: fit-content;
+  }
+
+  &__screenshots-checkbox {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+}
