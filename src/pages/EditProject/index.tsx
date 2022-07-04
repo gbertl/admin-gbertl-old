@@ -198,7 +198,7 @@ const EditProject = () => {
                   onChange={handleChange}
                   checked={inputs.technologies.includes(technology.id)}
                   label={technology.name}
-                  id={technology.name}
+                  id={`technologies-${technology.id}`}
                   inline
                 />
               </React.Fragment>
@@ -218,7 +218,7 @@ const EditProject = () => {
                   }}
                   checked={true}
                   label={newTechnology.name}
-                  id={newTechnology.name}
+                  id={`newTechnologies-${idx}`}
                   inline
                 />
               </React.Fragment>
@@ -250,7 +250,7 @@ const EditProject = () => {
                   onChange={handleChange}
                   checked={inputs.categories.includes(category.id)}
                   label={category.title}
-                  id={category.title}
+                  id={`categories-${category.id}`}
                   inline
                 />
               </React.Fragment>
