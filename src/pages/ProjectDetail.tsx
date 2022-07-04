@@ -7,29 +7,32 @@ import { useQuery } from 'react-query';
 
 const ProjectDetail = () => {
   const params = useParams();
-  const { data: project } = useQuery<Project, Error>(
-    'project',
-    async () => (await api.getProject(parseInt(params.id || ''))).data,
+  const { data: project } = useQuery<Project, Error, Project, string[]>(
+    ['project', params.id || ''],
+    async ({ queryKey }) => (await api.getProject(parseInt(queryKey[1]))).data,
     {
       enabled: !!params.id,
     }
   );
+
   const { data: screenshots } = useQuery<Screenshot[], Error>(
-    'screenshots',
+    ['screenshots', params.id],
     async () => (await api.getScreenshots(project?.screenshots)).data,
     {
       enabled: !!project?.screenshots.length,
     }
   );
+
   const { data: technologies } = useQuery<Technology[], Error>(
-    'technologies',
+    ['technologies', params.id],
     async () => (await api.getTechnologies(project?.technologies)).data,
     {
       enabled: !!project?.technologies.length,
     }
   );
+
   const { data: categories } = useQuery<Category[], Error>(
-    'categories',
+    ['categories', params.id],
     async () => (await api.getCategories(project?.categories)).data,
     {
       enabled: !!project?.categories.length,
