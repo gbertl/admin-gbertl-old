@@ -1,1 +1,28 @@
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+@import '~bootstrap/scss/utilities';
+
+@function map-deep-get($map, $keys...) {
+  @each $key in $keys {
+    $map: map-get($map, $key);
+  }
+
+  @return $map;
+}
+
+$utilities: (
+  'max-width': (
+    property: max-width,
+    class: mw,
+    values:
+      map-merge(
+        map-deep-get($utilities, 'max-width', 'values'),
+        (
+          75: 75%,
+        )
+      ),
+  ),
+);
+
 @import '~bootstrap/scss/bootstrap';
