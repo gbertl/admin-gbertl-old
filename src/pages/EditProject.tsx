@@ -3,8 +3,9 @@ import { useParams } from 'react-router-dom';
 
 import { Category, Project, Screenshot, Technology } from '../typings';
 import * as api from '../api';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-const initialProject = {
+const initialInputs = {
   id: 0,
   title: '',
   description: '',
@@ -19,26 +20,52 @@ const initialProject = {
 const EditProject = () => {
   const params = useParams();
 
-  const [project, setProject] = useState<Project>(initialProject);
-  const [technologies, setTechnologies] = useState<Technology[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [screenshots, setScreenshots] = useState<Screenshot[]>([]);
+  const queryClient = useQueryClient();
+
+  const { data: project } = useQuery<Project, Error, Project, string[]>(
+    ['project', params.id || ''],
+    async ({ queryKey }) => (await api.getProject(parseInt(queryKey[1]))).data,
+    { enabled: !!params.id }
+  );
+
+  const { data: technologies } = useQuery<Technology[], Error>(
+    'technologies',
+    async () => (await api.getTechnologies()).data
+  );
+
+  const { data: categories } = useQuery<Category[], Error>(
+    'categories',
+    async () => (await api.getCategories()).data
+  );
+
+  const { data: screenshots } = useQuery<Screenshot[], Error>(
+    'screenshots',
+    async () => (await api.getScreenshots()).data
+  );
+
+  const [inputs, setInputs] = useState<Project>(initialInputs);
 
   const [newTechnologies, setNewTechnologies] = useState<
     Omit<Technology, 'id'>[] | []
   >([]);
 
-  const [message, setMessage] = useState('');
+  const { mutateAsync: createTechnology } = useMutation(api.createTechnology);
+  const {
+    mutate: updateProject,
+    isLoading,
+    isSuccess,
+  } = useMutation(api.updateProject, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['project', params.id || '']);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (!params.id) return;
 
     e.preventDefault();
 
-    setMessage('loading');
-
-    let newProject = { ...project };
-    let createdTechnologies: Technology[] = [];
+    let newProject = { ...inputs };
 
     if (newTechnologies.length) {
       // create new technologies then add it to project
@@ -46,9 +73,8 @@ const EditProject = () => {
         let ids: number[] = [];
 
         for (const nt of newTechnologies) {
-          const { data } = await api.createTechnology(nt);
+          const { data } = await createTechnology(nt);
           ids.push(data.id);
-          createdTechnologies.push(data);
         }
 
         return Promise.resolve(ids);
@@ -56,17 +82,12 @@ const EditProject = () => {
 
       const newTechIds = await createTechs();
       newProject.technologies = newProject.technologies.concat(newTechIds);
+
+      setNewTechnologies([]);
+      queryClient.invalidateQueries('technologies');
     }
 
-    const { data } = await api.updateProject(parseInt(params.id), newProject);
-
-    setProject(data);
-
-    // replace newTechnologies to newly created technologies
-    setTechnologies(technologies.concat(createdTechnologies));
-    setNewTechnologies([]);
-
-    setMessage('success');
+    updateProject({ id: parseInt(params.id), project: newProject });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +96,7 @@ const EditProject = () => {
     let value: any;
 
     if (target.type === 'checkbox') {
-      const currentArr = project[name];
+      const currentArr = inputs[name];
       const currentValue = parseInt(target.value);
 
       if (!Array.isArray(currentArr)) return;
@@ -87,36 +108,16 @@ const EditProject = () => {
       value = target.value;
     }
 
-    setProject({
-      ...project,
+    setInputs({
+      ...inputs,
       [name]: value,
     });
   };
 
   useEffect(() => {
-    const fetchAll = async () => {
-      if (!params.id) return;
-
-      const [
-        { data: projectData },
-        { data: technologyData },
-        { data: categoryData },
-        { data: screenshotData },
-      ] = await Promise.all([
-        api.getProject(parseInt(params.id)),
-        api.getTechnologies(),
-        api.getCategories(),
-        api.getScreenshots(),
-      ]);
-
-      setProject(projectData);
-      setTechnologies(technologyData);
-      setCategories(categoryData);
-      setScreenshots(screenshotData);
-    };
-
-    fetchAll();
-  }, []);
+    if (!project) return;
+    setInputs({ ...project });
+  }, [project]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -124,7 +125,7 @@ const EditProject = () => {
         <input
           type="text"
           name="title"
-          value={project.title}
+          value={inputs.title}
           onChange={handleChange}
           placeholder="title"
         />
@@ -133,7 +134,7 @@ const EditProject = () => {
         <input
           type="text"
           name="description"
-          value={project.description}
+          value={inputs.description}
           onChange={handleChange}
           placeholder="description"
         />
@@ -142,7 +143,7 @@ const EditProject = () => {
         <input
           type="text"
           name="live_preview"
-          value={project.live_preview}
+          value={inputs.live_preview}
           onChange={handleChange}
           placeholder="live_preview"
         />
@@ -151,7 +152,7 @@ const EditProject = () => {
         <input
           type="text"
           name="source_code"
-          value={project.source_code}
+          value={inputs.source_code}
           onChange={handleChange}
           placeholder="source_code"
         />
@@ -160,20 +161,20 @@ const EditProject = () => {
         <input
           type="number"
           name="priority_order"
-          value={project.priority_order}
+          value={inputs.priority_order}
           onChange={handleChange}
           placeholder="priority_order"
         />
       </div>
       <div>
-        {technologies.map((technology) => (
+        {technologies?.map((technology) => (
           <React.Fragment key={technology.id}>
             <input
               type="checkbox"
               name="technologies"
               value={technology.id}
               onChange={handleChange}
-              defaultChecked={project.technologies.includes(technology.id)}
+              defaultChecked={inputs.technologies.includes(technology.id)}
             />
             {technology.name}
           </React.Fragment>
@@ -209,35 +210,37 @@ const EditProject = () => {
         />
       </div>
       <div>
-        {categories.map((category) => (
+        {categories?.map((category) => (
           <React.Fragment key={category.id}>
             <input
               type="checkbox"
               name="categories"
               value={category.id}
               onChange={handleChange}
-              defaultChecked={project.categories.includes(category.id)}
+              defaultChecked={inputs.categories.includes(category.id)}
             />
             {category.title}
           </React.Fragment>
         ))}
       </div>
       <div>
-        {screenshots.map((screenshot) => (
+        {screenshots?.map((screenshot) => (
           <React.Fragment key={screenshot.id}>
             <input
               type="checkbox"
               name="screenshots"
               value={screenshot.id}
               onChange={handleChange}
-              defaultChecked={project.screenshots.includes(screenshot.id)}
+              defaultChecked={inputs.screenshots.includes(screenshot.id)}
             />
             <img src={screenshot.image} alt="project screenshot" width={200} />
           </React.Fragment>
         ))}
       </div>
       <button>Submit</button>
-      {message && <div>{message}</div>}
+      <p>
+        {isLoading && 'Please wait ...'} {isSuccess && 'Updated successfully!'}
+      </p>
     </form>
   );
 };
