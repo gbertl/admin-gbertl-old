@@ -6,6 +6,7 @@ import * as api from '../../api';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { Container, Form, FloatingLabel, Button } from 'react-bootstrap';
 import './style.scss';
+import { AxiosError, AxiosResponse } from 'axios';
 
 const initialInputs = {
   id: 0,
@@ -56,11 +57,16 @@ const EditProject = () => {
     mutate: updateProject,
     isLoading,
     isSuccess,
-  } = useMutation(api.updateProject, {
-    onSuccess: () => {
-      queryClient.invalidateQueries(['project', params.id || '']);
-    },
-  });
+    isError,
+    error,
+  } = useMutation<AxiosResponse, AxiosError, { id: number; project: Project }>(
+    api.updateProject,
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['project', params.id || '']);
+      },
+    }
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (!params.id) return;
@@ -288,9 +294,14 @@ const EditProject = () => {
           <Button variant="primary" type="submit" disabled={isLoading}>
             Submit
           </Button>
-          <small className="d-block mt-1">
+          <small
+            className={`d-block mt-1 ${isSuccess && 'text-success'} ${
+              isError && 'text-danger'
+            }`}
+          >
             {isLoading && 'Please wait ...'}
             {isSuccess && 'Updated successfully!'}
+            {isError && error.message}
           </small>
         </Form>
       </Container>
