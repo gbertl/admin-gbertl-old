@@ -14,7 +14,7 @@ const routes = {
   },
   technologyList: '/technologies/',
   categoryList: '/categories',
-  screenshotList: '/screenshots',
+  screenshotList: '/screenshots/',
 };
 
 export default routes;

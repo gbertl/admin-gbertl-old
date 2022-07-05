@@ -52,6 +52,10 @@ const EditProject = () => {
     Omit<Technology, 'id'>[] | []
   >([]);
 
+  const [newScreenshots, setNewScreenshots] = useState<
+    Omit<Screenshot, 'id'>[]
+  >([]);
+
   const { mutateAsync: createTechnology } = useMutation(api.createTechnology);
   const {
     mutate: updateProject,
@@ -67,6 +71,8 @@ const EditProject = () => {
       },
     }
   );
+
+  const { mutateAsync: createScreenshot } = useMutation(api.createScreenshot);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (!params.id) return;
@@ -95,6 +101,25 @@ const EditProject = () => {
       queryClient.invalidateQueries('technologies');
     }
 
+    if (newScreenshots.length) {
+      const createScs = async () => {
+        let ids: number[] = [];
+
+        for (const ns of newScreenshots) {
+          const { data } = await createScreenshot(ns);
+          ids.push(data.id);
+        }
+
+        return Promise.resolve(ids);
+      };
+
+      const newScIds = await createScs();
+      newProject.screenshots = newProject.screenshots.concat(newScIds);
+
+      setNewScreenshots([]);
+      queryClient.invalidateQueries('screenshots');
+    }
+
     updateProject({ id: parseInt(params.id), project: newProject });
   };
 
@@ -120,6 +145,14 @@ const EditProject = () => {
       ...inputs,
       [name]: value,
     });
+  };
+
+  const handleNewScreenshots = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewScreenshots([
+      ...newScreenshots,
+      { image: e.target.files?.[0] || '', project: parseInt(params.id || '') },
+    ]);
+    e.target.value = '';
   };
 
   useEffect(() => {
@@ -242,7 +275,7 @@ const EditProject = () => {
                   (e.target as HTMLInputElement).value = '';
                 }
               }}
-              className="d-inline w-auto"
+              className="w-auto mt-1"
             />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -281,7 +314,11 @@ const EditProject = () => {
                   />
                   <Form.Check.Label>
                     <img
-                      src={screenshot.image}
+                      src={
+                        typeof screenshot.image === 'string'
+                          ? screenshot.image
+                          : ''
+                      }
                       alt="project screenshot"
                       width={200}
                       className="img-fluid"
@@ -290,6 +327,46 @@ const EditProject = () => {
                 </Form.Check>
               </React.Fragment>
             ))}
+            {newScreenshots.map((newScreenshot, idx) => (
+              <React.Fragment key={idx}>
+                <Form.Check
+                  inline
+                  className="ps-0 position-relative project-form__screenshots"
+                  type="checkbox"
+                  id={`newScreenshots-${idx}`}
+                >
+                  <Form.Check.Input
+                    onChange={() =>
+                      setNewScreenshots(
+                        newScreenshots.filter(
+                          (ns) => ns.image !== newScreenshot.image
+                        )
+                      )
+                    }
+                    checked={true}
+                    className="project-form__screenshots-checkbox"
+                  />
+                  <Form.Check.Label>
+                    <img
+                      src={
+                        typeof newScreenshot.image !== 'string'
+                          ? URL.createObjectURL(newScreenshot.image)
+                          : ''
+                      }
+                      alt="project newScreenshot"
+                      width={200}
+                      className="img-fluid"
+                    />
+                  </Form.Check.Label>
+                </Form.Check>
+              </React.Fragment>
+            ))}
+            <Form.Control
+              type="file"
+              onChange={handleNewScreenshots}
+              size="sm"
+              className="w-auto mt-1"
+            />
           </Form.Group>
           <Button variant="primary" type="submit" disabled={isLoading}>
             Submit

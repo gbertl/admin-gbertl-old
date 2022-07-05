@@ -80,7 +80,13 @@ const ProjectDetail = () => {
             <div className="fw-bold mb-1">Screenshots</div>
             <div className="d-flex gap-2 flex-wrap">
               {screenshots?.map((screenshot) => (
-                <img src={screenshot.image} alt="screenshot" width={200} />
+                <img
+                  src={
+                    typeof screenshot.image === 'string' ? screenshot.image : ''
+                  }
+                  alt="screenshot"
+                  width={200}
+                />
               ))}
             </div>
           </ListGroup.Item>
