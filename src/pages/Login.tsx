@@ -1,6 +1,18 @@
+import { AxiosError, AxiosResponse } from 'axios';
 import { useState } from 'react';
+import {
+  Alert,
+  Button,
+  Card,
+  Container,
+  FloatingLabel,
+  Form,
+} from 'react-bootstrap';
+import { useMutation } from 'react-query';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import * as api from '../api';
+import routes from '../routes';
+import { UserLogin } from '../typings';
 
 interface IInputs {
   username: string;
@@ -20,31 +32,28 @@ interface LocationProps {
 
 const Login = () => {
   const [inputs, setInputs] = useState<IInputs>(initialInputs);
-  const [message, setMessage] = useState('');
 
   const navigate = useNavigate();
   const location = useLocation() as LocationProps;
 
+  const {
+    mutate: login,
+    isLoading,
+    isError,
+    error,
+  } = useMutation<AxiosResponse, AxiosError, UserLogin>(api.login, {
+    onSuccess: () => {
+      if (location.state?.from) {
+        navigate(location.state?.from, { replace: true });
+      } else {
+        navigate(routes.home, { replace: true });
+      }
+    },
+  });
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    try {
-      setMessage('loggin you in');
-
-      await api.login(inputs.username, inputs.password);
-
-      setInputs(initialInputs);
-
-      if (location.state?.from) {
-        navigate(location.state?.from);
-      }
-
-      setMessage('done');
-    } catch (e) {
-      if (e instanceof Error) {
-        setMessage(e.message);
-      }
-    }
+    login({ username: inputs.username, password: inputs.password });
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,24 +64,60 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        name="username"
-        placeholder="username"
-        value={inputs.username}
-        onChange={handleChange}
-      />
-      <input
-        type="password"
-        name="password"
-        placeholder="password"
-        value={inputs.password}
-        onChange={handleChange}
-      />
-      <button>Submit</button>
-      {message && <div className="alert alert-info">{message}</div>}
-    </form>
+    <section className="login">
+      <Container>
+        {location.state?.from && (
+          <Alert variant="warning" className="w-50 mx-auto">
+            You must login first.
+          </Alert>
+        )}
+        <Card className="w-50 mx-auto">
+          <Card.Body>
+            <Form onSubmit={handleSubmit}>
+              <FloatingLabel
+                controlId="username"
+                label="Username"
+                className="mb-3"
+              >
+                <Form.Control
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  value={inputs.username}
+                  onChange={handleChange}
+                />
+              </FloatingLabel>
+              <FloatingLabel
+                controlId="password"
+                label="Password"
+                className="mb-3"
+              >
+                <Form.Control
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  value={inputs.password}
+                  onChange={handleChange}
+                />
+              </FloatingLabel>
+              <Button
+                variant="primary"
+                type="submit"
+                className="w-100"
+                disabled={isLoading}
+              >
+                Submit
+              </Button>
+              {isError && (
+                <small className="d-block mt-1 text-center text-danger">
+                  {error.message}
+                </small>
+              )}
+            </Form>
+          </Card.Body>
+        </Card>
+      </Container>
+    </section>
   );
 };
 

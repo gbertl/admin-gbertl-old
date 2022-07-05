@@ -28,3 +28,8 @@ export interface Screenshot {
   priority_order: number;
   project: number;
 }
+
+export interface UserLogin {
+  username: string;
+  password: string;
+}

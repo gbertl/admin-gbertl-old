@@ -1,7 +1,7 @@
 import { generatePath } from 'react-router-dom';
 import routes from './routes';
 import axios, { axiosPrivate } from './axios';
-import { Project, Technology } from './typings';
+import { UserLogin, Project, Technology } from './typings';
 
 export const updateProject = ({
   id,
@@ -60,7 +60,7 @@ export const getProjects = (ordering: string[] = []) =>
     },
   });
 
-export const login = async (username: string, password: string) => {
+export const login = async ({ username, password }: UserLogin) => {
   try {
     const response = await axios.post(routes.token, {
       username,
