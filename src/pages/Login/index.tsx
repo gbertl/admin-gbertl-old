@@ -10,9 +10,10 @@ import {
 } from 'react-bootstrap';
 import { useMutation } from 'react-query';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
-import * as api from '../api';
-import routes from '../routes';
-import { UserLogin } from '../typings';
+import * as api from '../../api';
+import routes from '../../routes';
+import { UserLogin } from '../../typings';
+import './style.scss';
 
 interface IInputs {
   username: string;
@@ -67,11 +68,9 @@ const Login = () => {
     <section className="login">
       <Container>
         {location.state?.from && (
-          <Alert variant="warning" className="w-50 mx-auto">
-            You must login first.
-          </Alert>
+          <Alert variant="warning">You must login first.</Alert>
         )}
-        <Card className="w-50 mx-auto">
+        <Card className="mx-auto login__card">
           <Card.Body>
             <Form onSubmit={handleSubmit}>
               <FloatingLabel
