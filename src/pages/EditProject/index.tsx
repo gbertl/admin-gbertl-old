@@ -380,9 +380,13 @@ const EditProject = () => {
               isError && 'text-danger'
             }`}
           >
-            {isLoading && 'Please wait ...'}
-            {isSuccess && 'Updated successfully!'}
-            {isError && error.message}
+            {isLoading
+              ? 'Please wait ...'
+              : isSuccess
+              ? 'Updated successfully!'
+              : isError
+              ? error.message
+              : ''}
           </small>
         </Form>
       </Container>
