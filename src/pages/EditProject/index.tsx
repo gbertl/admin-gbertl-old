@@ -23,6 +23,8 @@ const initialInputs = {
 const EditProject = () => {
   const params = useParams();
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const queryClient = useQueryClient();
 
   const { data: project } = useQuery<Project, Error, Project, string[]>(
@@ -59,7 +61,6 @@ const EditProject = () => {
   const { mutateAsync: createTechnology } = useMutation(api.createTechnology);
   const {
     mutate: updateProject,
-    isLoading,
     isSuccess,
     isError,
     error,
@@ -67,6 +68,7 @@ const EditProject = () => {
     api.updateProject,
     {
       onSuccess: () => {
+        setIsLoading(false);
         queryClient.invalidateQueries(['project', params.id || '']);
       },
     }
@@ -80,6 +82,8 @@ const EditProject = () => {
     e.preventDefault();
 
     let newProject = { ...inputs };
+
+    setIsLoading(true);
 
     if (newTechnologies.length) {
       // create new technologies then add it to project
