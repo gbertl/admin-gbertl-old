@@ -41,10 +41,11 @@ export const getCategories = (ids: number[] = []) =>
     },
   });
 
-export const getScreenshots = (ids: number[] = []) =>
+export const getScreenshots = (ids: number[] = [], ordering: string[] = []) =>
   axios.get(routes.screenshotList, {
     params: {
       ids,
+      ordering,
     },
   });
 

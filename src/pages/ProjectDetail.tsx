@@ -17,7 +17,8 @@ const ProjectDetail = () => {
 
   const { data: screenshots } = useQuery<Screenshot[], Error>(
     ['screenshots', params.id],
-    async () => (await api.getScreenshots(project?.screenshots)).data,
+    async () =>
+      (await api.getScreenshots(project?.screenshots, ['priority_order'])).data,
     {
       enabled: !!project?.screenshots.length,
     }
