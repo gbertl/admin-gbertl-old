@@ -1,0 +1,15 @@
+@use './functions' as f;
+
+$utilities: (
+  'max-width': (
+    property: max-width,
+    class: mw,
+    values:
+      map-merge(
+        f.map-deep-get($utilities, 'max-width', 'values'),
+        (
+          75: 75%,
+        )
+      ),
+  ),
+);
