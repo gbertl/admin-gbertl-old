@@ -3,9 +3,9 @@ import Container from 'react-bootstrap/Container';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useQuery } from 'react-query';
 
-import '../scss/components/project-detail.scss';
-import * as api from '../api';
-import { Category, Project, Screenshot, Technology } from '../typings';
+import './styles.scss';
+import * as api from '../../api';
+import { Category, Project, Screenshot, Technology } from '../../typings';
 
 const ProjectDetail = () => {
   const params = useParams();
