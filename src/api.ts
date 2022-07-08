@@ -1,4 +1,5 @@
 import { generatePath } from 'react-router-dom';
+
 import routes from './routes';
 import axios, { axiosPrivate } from './axios';
 import { UserLogin, Project, Technology, Screenshot } from './typings';

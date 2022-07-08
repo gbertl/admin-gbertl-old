@@ -1,15 +1,16 @@
-import { Project } from '../typings';
 import Container from 'react-bootstrap/Container';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { generatePath, Link } from 'react-router-dom';
-import routes from '../routes';
-import * as api from '../api';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
+
+import routes from '../routes';
+import * as api from '../api';
+import { Project } from '../typings';
 
 const Home = () => {
   const queryClient = useQueryClient();

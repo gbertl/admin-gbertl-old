@@ -1,8 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
 import { axiosPrivate } from '../axios';
 import routes from '../routes';
 import * as api from '../api';
-import { useEffect } from 'react';
 
 const useSetupInterceptor = () => {
   const navigate = useNavigate();

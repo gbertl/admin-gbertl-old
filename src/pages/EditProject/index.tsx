@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
-import { Category, Project, Screenshot, Technology } from '../../typings';
-import * as api from '../../api';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { AxiosError, AxiosResponse } from 'axios';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Button from 'react-bootstrap/Button';
 
 import './style.scss';
-import { AxiosError, AxiosResponse } from 'axios';
+import { Category, Project, Screenshot, Technology } from '../../typings';
+import * as api from '../../api';
 
 const initialInputs = {
   id: 0,
