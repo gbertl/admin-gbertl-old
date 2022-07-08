@@ -4,7 +4,11 @@ import { useParams } from 'react-router-dom';
 import { Category, Project, Screenshot, Technology } from '../../typings';
 import * as api from '../../api';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { Container, Form, FloatingLabel, Button } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Button from 'react-bootstrap/Button';
+
 import './style.scss';
 import { AxiosError, AxiosResponse } from 'axios';
 

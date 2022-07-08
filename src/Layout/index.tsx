@@ -1,4 +1,5 @@
-import { Container, Navbar } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
 import { Link } from 'react-router-dom';
 import routes from '../routes';
 

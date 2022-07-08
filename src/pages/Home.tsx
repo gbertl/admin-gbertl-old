@@ -6,7 +6,8 @@ import { generatePath, Link } from 'react-router-dom';
 import routes from '../routes';
 import * as api from '../api';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { Modal, Spinner } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
 import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
 

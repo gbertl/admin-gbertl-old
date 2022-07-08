@@ -1,13 +1,11 @@
 import { AxiosError, AxiosResponse } from 'axios';
 import { useState } from 'react';
-import {
-  Alert,
-  Button,
-  Card,
-  Container,
-  FloatingLabel,
-  Form,
-} from 'react-bootstrap';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Container from 'react-bootstrap/Container';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Form from 'react-bootstrap/Form';
 import { useMutation } from 'react-query';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import * as api from '../../api';

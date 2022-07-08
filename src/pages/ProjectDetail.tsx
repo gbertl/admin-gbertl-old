@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { Category, Project, Screenshot, Technology } from '../typings';
-import { Container, ListGroup } from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import ListGroup from 'react-bootstrap/ListGroup';
 import '../scss/components/project-detail.scss';
 import * as api from '../api';
 import { useQuery } from 'react-query';
