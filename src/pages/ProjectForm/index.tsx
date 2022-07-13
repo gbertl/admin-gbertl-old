@@ -11,8 +11,11 @@ import './style.scss';
 import { Category, Project, Screenshot, Technology } from '../../typings';
 import * as api from '../../api';
 
+export interface Inputs extends Omit<Project, 'id'> {
+  id?: number;
+}
+
 const initialInputs = {
-  id: 0,
   title: '',
   description: '',
   live_preview: '',
@@ -23,7 +26,7 @@ const initialInputs = {
   screenshots: [],
 };
 
-const EditProject = () => {
+const ProjectForm = () => {
   const params = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +54,7 @@ const EditProject = () => {
     async () => (await api.getScreenshots()).data
   );
 
-  const [inputs, setInputs] = useState<Project>(initialInputs);
+  const [inputs, setInputs] = useState<Inputs>(initialInputs);
 
   const [newTechnologies, setNewTechnologies] = useState<
     Omit<Technology, 'id'>[] | []
@@ -62,12 +65,25 @@ const EditProject = () => {
   >([]);
 
   const { mutateAsync: createTechnology } = useMutation(api.createTechnology);
+
   const {
-    mutate: updateProject,
+    mutate: createProject,
     isSuccess,
     isError,
     error,
-  } = useMutation<AxiosResponse, AxiosError, { id: number; project: Project }>(
+  } = useMutation<AxiosResponse, AxiosError, Inputs>(api.createProject, {
+    onSuccess: () => {
+      setIsLoading(false);
+      setInputs(initialInputs);
+    },
+  });
+
+  const {
+    mutate: updateProject,
+    isSuccess: isUpdated,
+    isError: isUpdatedError,
+    error: updatedError,
+  } = useMutation<AxiosResponse, AxiosError, { id: number; project: Inputs }>(
     api.updateProject,
     {
       onSuccess: () => {
@@ -80,8 +96,6 @@ const EditProject = () => {
   const { mutateAsync: createScreenshot } = useMutation(api.createScreenshot);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!params.id) return;
-
     e.preventDefault();
 
     let newProject = { ...inputs };
@@ -127,7 +141,11 @@ const EditProject = () => {
       queryClient.invalidateQueries('screenshots');
     }
 
-    updateProject({ id: parseInt(params.id), project: newProject });
+    if (params.id) {
+      updateProject({ id: parseInt(params.id), project: newProject });
+    } else {
+      createProject(newProject);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,10 +173,9 @@ const EditProject = () => {
   };
 
   const handleNewScreenshots = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewScreenshots([
-      ...newScreenshots,
-      { image: e.target.files?.[0] || '', project: parseInt(params.id || '') },
-    ]);
+    const ns: Omit<Screenshot, 'id'> = { image: e.target.files?.[0] || '' };
+    if (params.id) ns.project = parseInt(params.id);
+    setNewScreenshots([...newScreenshots, ns]);
     e.target.value = '';
   };
 
@@ -378,17 +395,17 @@ const EditProject = () => {
           <Button variant="primary" type="submit" disabled={isLoading}>
             Submit
           </Button>
-          <small
-            className={`d-block mt-1 ${isSuccess && 'text-success'} ${
-              isError && 'text-danger'
-            }`}
-          >
+          <small className="d-block mt-1">
             {isLoading
               ? 'Please wait ...'
               : isSuccess
-              ? 'Updated successfully!'
+              ? 'Created successfully!'
               : isError
               ? error.message
+              : isUpdated
+              ? 'Update successfully'
+              : isUpdatedError
+              ? updatedError.message
               : ''}
           </small>
         </Form>
@@ -397,4 +414,4 @@ const EditProject = () => {
   );
 };
 
-export default EditProject;
+export default ProjectForm;

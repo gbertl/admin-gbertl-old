@@ -44,7 +44,7 @@ const Login = () => {
   } = useMutation<AxiosResponse, AxiosError, UserLogin>(api.login, {
     onSuccess: () => {
       if (location.state?.from) {
-        navigate(location.state?.from, { replace: true });
+        navigate(location.state.from, { replace: true });
       } else {
         navigate(routes.home, { replace: true });
       }

@@ -26,7 +26,7 @@ export interface Screenshot {
   id: number;
   image: string | File;
   priority_order?: number;
-  project: number;
+  project?: number;
 }
 
 export interface UserLogin {

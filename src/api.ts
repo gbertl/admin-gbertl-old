@@ -2,14 +2,18 @@ import { generatePath } from 'react-router-dom';
 
 import routes from './routes';
 import axios, { axiosPrivate } from './axios';
-import { UserLogin, Project, Technology, Screenshot } from './typings';
+import { UserLogin, Technology, Screenshot } from './typings';
+import { Inputs } from './pages/ProjectForm';
+
+export const createProject = (project: Inputs) =>
+  axiosPrivate.post(routes.projectList, project);
 
 export const updateProject = ({
   id,
   project,
 }: {
   id: number;
-  project: Project;
+  project: Inputs;
 }) =>
   axiosPrivate.put(
     generatePath(routes.projectDetail, {
@@ -98,6 +102,9 @@ export const updateToken = async (refresh: string) => {
 export const createScreenshot = (screenshot: Omit<Screenshot, 'id'>) => {
   const fd = new FormData();
   fd.append('image', screenshot.image);
-  fd.append('project', screenshot.project.toString());
+  if (screenshot.project) {
+    fd.append('project', screenshot.project.toString());
+  }
+
   return axiosPrivate.post(routes.screenshotList, fd);
 };

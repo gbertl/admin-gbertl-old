@@ -53,6 +53,10 @@ const Home = () => {
     <>
       <section className="home">
         <Container>
+          <Link to={routes.newProject} className="btn btn-primary mb-2">
+            Add Project
+          </Link>
+
           {!isLoading ? (
             <Table responsive="sm" striped>
               <thead>

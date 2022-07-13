@@ -5,9 +5,12 @@ const routes = {
     return `${this.token}refresh/`;
   },
   home: '/',
-  projectList: '/projects',
+  projectList: '/projects/',
+  get newProject() {
+    return `${this.projectList}new`;
+  },
   get projectDetail() {
-    return `${this.projectList}/:id/`;
+    return `${this.projectList}:id/`;
   },
   get projectEdit() {
     return `${this.projectDetail}edit`;
