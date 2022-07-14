@@ -11,7 +11,7 @@ const ProjectDetail = () => {
   const params = useParams();
   const { data: project } = useQuery<Project, Error, Project, string[]>(
     ['project', params.id || ''],
-    async ({ queryKey }) => (await api.getProject(parseInt(queryKey[1]))).data,
+    async ({ queryKey }) => (await api.getProject(queryKey[1])).data,
     {
       enabled: !!params.id,
     }
@@ -20,7 +20,7 @@ const ProjectDetail = () => {
   const { data: screenshots } = useQuery<Screenshot[], Error>(
     ['screenshots', params.id],
     async () =>
-      (await api.getScreenshots(project?.screenshots, ['priority_order'])).data,
+      (await api.getScreenshots(project?.screenshots, ['priorityOrder'])).data,
     {
       enabled: !!project?.screenshots.length,
     }
@@ -53,15 +53,14 @@ const ProjectDetail = () => {
             <span className="fw-bold">Description</span> {project?.description}
           </ListGroup.Item>
           <ListGroup.Item>
-            <span className="fw-bold">Live preview</span>{' '}
-            {project?.live_preview}
+            <span className="fw-bold">Live preview</span> {project?.livePreview}
           </ListGroup.Item>
           <ListGroup.Item>
-            <span className="fw-bold">Source code</span> {project?.source_code}
+            <span className="fw-bold">Source code</span> {project?.sourceCode}
           </ListGroup.Item>
           <ListGroup.Item>
             <span className="fw-bold">Priority order</span>{' '}
-            {project?.priority_order}
+            {project?.priorityOrder}
           </ListGroup.Item>
           <ListGroup.Item>
             <span className="fw-bold">Technologies</span>{' '}

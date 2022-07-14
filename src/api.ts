@@ -12,7 +12,7 @@ export const updateProject = ({
   id,
   project,
 }: {
-  id: number;
+  id: string;
   project: Inputs;
 }) =>
   axiosPrivate.put(
@@ -22,31 +22,31 @@ export const updateProject = ({
     project
   );
 
-export const getProject = (id: number) =>
+export const getProject = (id: string) =>
   axios.get(
     generatePath(routes.projectDetail, {
       id: id.toString(),
     })
   );
 
-export const getTechnologies = (ids: number[] = []) =>
+export const getTechnologies = (ids: string[] = []) =>
   axios.get(routes.technologyList, {
     params: {
       ids,
     },
   });
 
-export const createTechnology = (technology: Omit<Technology, 'id'>) =>
+export const createTechnology = (technology: Omit<Technology, '_id'>) =>
   axiosPrivate.post(routes.technologyList, technology);
 
-export const getCategories = (ids: number[] = []) =>
+export const getCategories = (ids: string[] = []) =>
   axios.get(routes.categoryList, {
     params: {
       ids,
     },
   });
 
-export const getScreenshots = (ids: number[] = [], ordering: string[] = []) =>
+export const getScreenshots = (ids: string[] = [], ordering: string[] = []) =>
   axios.get(routes.screenshotList, {
     params: {
       ids,
@@ -54,7 +54,7 @@ export const getScreenshots = (ids: number[] = [], ordering: string[] = []) =>
     },
   });
 
-export const deleteProject = (id: number) =>
+export const deleteProject = (id: string) =>
   axiosPrivate.delete(
     generatePath(routes.projectDetail, { id: id.toString() })
   );
@@ -99,12 +99,9 @@ export const updateToken = async (refresh: string) => {
   }
 };
 
-export const createScreenshot = (screenshot: Omit<Screenshot, 'id'>) => {
+export const createScreenshot = (screenshot: Omit<Screenshot, '_id'>) => {
   const fd = new FormData();
   fd.append('image', screenshot.image);
-  if (screenshot.project) {
-    fd.append('project', screenshot.project.toString());
-  }
 
   return axiosPrivate.post(routes.screenshotList, fd);
 };

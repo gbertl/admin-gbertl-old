@@ -17,14 +17,14 @@ const Home = () => {
 
   const { isLoading, data: projects } = useQuery<Project[], Error>(
     'projects',
-    async () => (await api.getProjects(['priority_order'])).data
+    async () => (await api.getProjects(['priorityOrder'])).data
   );
 
   const {
     mutate: deleteProject,
     isError,
     error,
-  } = useMutation<AxiosResponse, AxiosError, number>(api.deleteProject, {
+  } = useMutation<AxiosResponse, AxiosError, string>(api.deleteProject, {
     onSuccess: () => {
       queryClient.invalidateQueries('projects');
       setShowPrompt(false);
@@ -33,11 +33,11 @@ const Home = () => {
 
   const [showPrompt, setShowPrompt] = useState(false);
   const [currentProject, setCurrentProject] = useState<{
-    id: number;
+    id: string;
     title: string;
   }>();
 
-  const handleShow = (id: number, title: string) => {
+  const handleShow = (id: string, title: string) => {
     setCurrentProject({ id, title });
     setShowPrompt(true);
   };
@@ -70,13 +70,13 @@ const Home = () => {
                 {projects?.length ? (
                   <>
                     {projects?.map((project) => (
-                      <tr key={project.id}>
+                      <tr key={project._id}>
                         <td>{project.title}</td>
-                        <td>{project.priority_order}</td>
+                        <td>{project.priorityOrder}</td>
                         <td className="d-flex gap-1">
                           <Link
                             to={generatePath(routes.projectDetail, {
-                              id: project.id.toString(),
+                              id: project._id.toString(),
                             })}
                             className="btn btn-info"
                           >
@@ -84,7 +84,7 @@ const Home = () => {
                           </Link>
                           <Link
                             to={generatePath(routes.projectEdit, {
-                              id: project.id.toString(),
+                              id: project._id.toString(),
                             })}
                             className="btn btn-warning"
                           >
@@ -93,7 +93,7 @@ const Home = () => {
                           <Button
                             variant="danger"
                             onClick={() =>
-                              handleShow(project.id, project.title)
+                              handleShow(project._id, project.title)
                             }
                           >
                             Delete

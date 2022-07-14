@@ -11,16 +11,16 @@ import './style.scss';
 import { Category, Project, Screenshot, Technology } from '../../typings';
 import * as api from '../../api';
 
-export interface Inputs extends Omit<Project, 'id'> {
-  id?: number;
+export interface Inputs extends Omit<Project, '_id'> {
+  _id?: string;
 }
 
 const initialInputs = {
   title: '',
   description: '',
-  live_preview: '',
-  source_code: '',
-  priority_order: 0,
+  livePreview: '',
+  sourceCode: '',
+  priorityOrder: 0,
   technologies: [],
   categories: [],
   screenshots: [],
@@ -35,7 +35,7 @@ const ProjectForm = () => {
 
   const { data: project } = useQuery<Project, Error, Project, string[]>(
     ['project', params.id || ''],
-    async ({ queryKey }) => (await api.getProject(parseInt(queryKey[1]))).data,
+    async ({ queryKey }) => (await api.getProject(queryKey[1])).data,
     { enabled: !!params.id }
   );
 
@@ -57,11 +57,11 @@ const ProjectForm = () => {
   const [inputs, setInputs] = useState<Inputs>(initialInputs);
 
   const [newTechnologies, setNewTechnologies] = useState<
-    Omit<Technology, 'id'>[] | []
+    Omit<Technology, '_id'>[] | []
   >([]);
 
   const [newScreenshots, setNewScreenshots] = useState<
-    Omit<Screenshot, 'id'>[]
+    Omit<Screenshot, '_id'>[]
   >([]);
 
   const { mutateAsync: createTechnology } = useMutation(api.createTechnology);
@@ -83,7 +83,7 @@ const ProjectForm = () => {
     isSuccess: isUpdated,
     isError: isUpdatedError,
     error: updatedError,
-  } = useMutation<AxiosResponse, AxiosError, { id: number; project: Inputs }>(
+  } = useMutation<AxiosResponse, AxiosError, { id: string; project: Inputs }>(
     api.updateProject,
     {
       onSuccess: () => {
@@ -105,11 +105,11 @@ const ProjectForm = () => {
     if (newTechnologies.length) {
       // create new technologies then add it to project
       const createTechs = async () => {
-        let ids: number[] = [];
+        let ids: string[] = [];
 
         for (const nt of newTechnologies) {
           const { data } = await createTechnology(nt);
-          ids.push(data.id);
+          ids.push(data._id);
         }
 
         return Promise.resolve(ids);
@@ -124,11 +124,11 @@ const ProjectForm = () => {
 
     if (newScreenshots.length) {
       const createScs = async () => {
-        let ids: number[] = [];
+        let ids: string[] = [];
 
         for (const ns of newScreenshots) {
           const { data } = await createScreenshot(ns);
-          ids.push(data.id);
+          ids.push(data._id);
         }
 
         return Promise.resolve(ids);
@@ -142,7 +142,7 @@ const ProjectForm = () => {
     }
 
     if (params.id) {
-      updateProject({ id: parseInt(params.id), project: newProject });
+      updateProject({ id: params.id, project: newProject });
     } else {
       createProject(newProject);
     }
@@ -155,13 +155,12 @@ const ProjectForm = () => {
 
     if (target.type === 'checkbox') {
       const currentArr = inputs[name];
-      const currentValue = parseInt(target.value);
 
       if (!Array.isArray(currentArr)) return;
 
       value = target.checked
-        ? currentArr.concat(currentValue)
-        : currentArr.filter((arrValue) => arrValue !== currentValue);
+        ? currentArr.concat(target.value)
+        : currentArr.filter((arrValue) => arrValue !== target.value);
     } else {
       value = target.value;
     }
@@ -173,8 +172,7 @@ const ProjectForm = () => {
   };
 
   const handleNewScreenshots = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const ns: Omit<Screenshot, 'id'> = { image: e.target.files?.[0] || '' };
-    if (params.id) ns.project = parseInt(params.id);
+    const ns: Omit<Screenshot, '_id'> = { image: e.target.files?.[0] || '' };
     setNewScreenshots([...newScreenshots, ns]);
     e.target.value = '';
   };
@@ -212,40 +210,40 @@ const ProjectForm = () => {
             />
           </FloatingLabel>
           <FloatingLabel
-            controlId="live_preview"
+            controlId="livePreview"
             label="Live preview"
             className="mb-3"
           >
             <Form.Control
               type="text"
-              name="live_preview"
-              value={inputs.live_preview}
+              name="livePreview"
+              value={inputs.livePreview}
               onChange={handleChange}
               placeholder="Live preview"
             />
           </FloatingLabel>
           <FloatingLabel
-            controlId="source_code"
+            controlId="sourceCode"
             label="Source code"
             className="mb-3"
           >
             <Form.Control
               type="text"
-              name="source_code"
-              value={inputs.source_code}
+              name="sourceCode"
+              value={inputs.sourceCode}
               onChange={handleChange}
               placeholder="Source code"
             />
           </FloatingLabel>
           <FloatingLabel
-            controlId="priority_order"
+            controlId="priorityOrder"
             label="Priority order"
             className="mb-3"
           >
             <Form.Control
               type="number"
-              name="priority_order"
-              value={inputs.priority_order}
+              name="priorityOrder"
+              value={inputs.priorityOrder}
               onChange={handleChange}
               placeholder="Priority order"
             />
@@ -253,15 +251,15 @@ const ProjectForm = () => {
           <Form.Group className="mb-3">
             <Form.Label className="d-block">Technologies</Form.Label>
             {technologies?.map((technology) => (
-              <React.Fragment key={technology.id}>
+              <React.Fragment key={technology._id}>
                 <Form.Check
                   type="checkbox"
                   name="technologies"
-                  value={technology.id}
+                  value={technology._id}
                   onChange={handleChange}
-                  checked={inputs.technologies.includes(technology.id)}
+                  checked={inputs.technologies.includes(technology._id)}
                   label={technology.name}
-                  id={`technologies-${technology.id}`}
+                  id={`technologies-${technology._id}`}
                   inline
                 />
               </React.Fragment>
@@ -305,15 +303,15 @@ const ProjectForm = () => {
           <Form.Group className="mb-3">
             <Form.Label className="d-block">Categories</Form.Label>
             {categories?.map((category) => (
-              <React.Fragment key={category.id}>
+              <React.Fragment key={category._id}>
                 <Form.Check
                   type="checkbox"
                   name="categories"
-                  value={category.id}
+                  value={category._id}
                   onChange={handleChange}
-                  checked={inputs.categories.includes(category.id)}
+                  checked={inputs.categories.includes(category._id)}
                   label={category.title}
-                  id={`categories-${category.id}`}
+                  id={`categories-${category._id}`}
                   inline
                 />
               </React.Fragment>
@@ -322,18 +320,18 @@ const ProjectForm = () => {
           <Form.Group className="mb-3">
             <Form.Label className="d-block">Screenshots</Form.Label>
             {screenshots?.map((screenshot) => (
-              <React.Fragment key={screenshot.id}>
+              <React.Fragment key={screenshot._id}>
                 <Form.Check
                   inline
                   className="ps-0 position-relative project-form__screenshots"
                   type="checkbox"
-                  id={`screenshots-${screenshot.id}`}
+                  id={`screenshots-${screenshot._id}`}
                 >
                   <Form.Check.Input
                     name="screenshots"
-                    value={screenshot.id}
+                    value={screenshot._id}
                     onChange={handleChange}
-                    checked={inputs.screenshots.includes(screenshot.id)}
+                    checked={inputs.screenshots.includes(screenshot._id)}
                     className="project-form__screenshots-checkbox"
                   />
                   <Form.Check.Label>

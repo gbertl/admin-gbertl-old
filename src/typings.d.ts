@@ -1,32 +1,31 @@
 export interface Project {
-  id: number;
+  _id: string;
   title: string;
   description: string;
-  live_preview: string;
-  source_code: string;
-  priority_order: number;
-  technologies: number[];
-  categories: number[];
-  screenshots: number[];
+  livePreview: string;
+  sourceCode: string;
+  priorityOrder: number;
+  technologies: string[];
+  categories: string[];
+  screenshots: string[];
 }
 
 export interface Technology {
-  id: number;
+  _id: string;
   name: string;
 }
 
 export interface Category {
-  id: number;
+  _id: string;
   title: string;
   name: string;
-  priority_order: number;
+  priorityOrder: number;
 }
 
 export interface Screenshot {
-  id: number;
+  _id: string;
   image: string | File;
-  priority_order?: number;
-  project?: number;
+  priorityOrder?: number;
 }
 
 export interface UserLogin {
