@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const baseURL =
   process.env.NODE_ENV === 'production'
-    ? 'https://gilbertlc-api.herokuapp.com/api'
+    ? 'https://api-gbertl.herokuapp.com'
     : 'http://localhost:3001';
 
 export const axiosPrivate = axios.create({
