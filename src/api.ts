@@ -99,9 +99,16 @@ export const updateToken = async (refresh: string) => {
   }
 };
 
-export const createScreenshot = (screenshot: Omit<Screenshot, '_id'>) => {
+export const createScreenshot = ({
+  image,
+  project,
+}: Omit<Screenshot, '_id'>) => {
   const fd = new FormData();
-  fd.append('image', screenshot.image);
+  fd.append('image', image);
+  fd.append('project', project);
 
   return axiosPrivate.post(routes.screenshotList, fd);
 };
+
+export const deleteScreenshot = async (id: string) =>
+  axiosPrivate.delete(generatePath(routes.screenshotDetail, { id }));

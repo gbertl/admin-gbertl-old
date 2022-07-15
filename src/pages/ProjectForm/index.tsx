@@ -50,8 +50,11 @@ const ProjectForm = () => {
   );
 
   const { data: screenshots } = useQuery<Screenshot[], Error>(
-    'screenshots',
-    async () => (await api.getScreenshots()).data
+    ['screenshots', project?._id],
+    async () => {
+      if (project) return (await api.getScreenshots(project.screenshots)).data;
+    },
+    { enabled: !!project }
   );
 
   const [inputs, setInputs] = useState<Inputs>(initialInputs);
@@ -61,46 +64,46 @@ const ProjectForm = () => {
   >([]);
 
   const [newScreenshots, setNewScreenshots] = useState<
-    Omit<Screenshot, '_id'>[]
+    Omit<Screenshot, '_id' | 'project'>[]
   >([]);
 
   const { mutateAsync: createTechnology } = useMutation(api.createTechnology);
 
-  const {
-    mutate: createProject,
-    isSuccess,
-    isError,
-    error,
-  } = useMutation<AxiosResponse, AxiosError, Inputs>(api.createProject, {
-    onSuccess: () => {
-      setIsLoading(false);
-      setInputs(initialInputs);
-    },
-  });
+  const { mutateAsync: createProject } = useMutation<
+    AxiosResponse,
+    AxiosError,
+    Inputs
+  >(api.createProject);
 
-  const {
-    mutate: updateProject,
-    isSuccess: isUpdated,
-    isError: isUpdatedError,
-    error: updatedError,
-  } = useMutation<AxiosResponse, AxiosError, { id: string; project: Inputs }>(
-    api.updateProject,
-    {
-      onSuccess: () => {
-        setIsLoading(false);
-        queryClient.invalidateQueries(['project', params.id || '']);
-      },
-    }
-  );
+  const { mutateAsync: updateProject } = useMutation<
+    AxiosResponse,
+    AxiosError,
+    { id: string; project: Inputs }
+  >(api.updateProject);
 
   const { mutateAsync: createScreenshot } = useMutation(api.createScreenshot);
+
+  const { mutateAsync: deleteScreenshot } = useMutation(api.deleteScreenshot);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let newProject = { ...inputs };
+    let currentProject = { ...inputs };
 
     setIsLoading(true);
+
+    const uncheckedScreenshots = project?.screenshots.filter(
+      (sc) => !currentProject.screenshots.includes(sc)
+    );
+
+    if (uncheckedScreenshots?.length) {
+      (async () => {
+        for (const us of uncheckedScreenshots) {
+          await deleteScreenshot(us);
+        }
+        queryClient.invalidateQueries(['screenshots', project?._id]);
+      })();
+    }
 
     if (newTechnologies.length) {
       // create new technologies then add it to project
@@ -116,18 +119,35 @@ const ProjectForm = () => {
       };
 
       const newTechIds = await createTechs();
-      newProject.technologies = newProject.technologies.concat(newTechIds);
+      currentProject.technologies =
+        currentProject.technologies.concat(newTechIds);
 
       setNewTechnologies([]);
       queryClient.invalidateQueries('technologies');
     }
+
+    if (params.id) {
+      const { data } = await updateProject({
+        id: params.id,
+        project: currentProject,
+      });
+      currentProject = data;
+    } else {
+      const { data } = await createProject(currentProject);
+      currentProject = data;
+    }
+
+    const currentId = currentProject._id as string;
 
     if (newScreenshots.length) {
       const createScs = async () => {
         let ids: string[] = [];
 
         for (const ns of newScreenshots) {
-          const { data } = await createScreenshot(ns);
+          const { data } = await createScreenshot({
+            image: ns.image,
+            project: currentId,
+          });
           ids.push(data._id);
         }
 
@@ -135,17 +155,21 @@ const ProjectForm = () => {
       };
 
       const newScIds = await createScs();
-      newProject.screenshots = newProject.screenshots.concat(newScIds);
+      currentProject.screenshots = currentProject.screenshots.concat(newScIds);
+
+      await updateProject({ id: currentId, project: currentProject });
 
       setNewScreenshots([]);
       queryClient.invalidateQueries('screenshots');
     }
 
     if (params.id) {
-      updateProject({ id: params.id, project: newProject });
+      queryClient.invalidateQueries(['project', params.id || '']);
     } else {
-      createProject(newProject);
+      setInputs(initialInputs);
     }
+
+    setIsLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,8 +196,10 @@ const ProjectForm = () => {
   };
 
   const handleNewScreenshots = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const ns: Omit<Screenshot, '_id'> = { image: e.target.files?.[0] || '' };
-    setNewScreenshots([...newScreenshots, ns]);
+    setNewScreenshots([
+      ...newScreenshots,
+      { image: e.target.files?.[0] || '' },
+    ]);
     e.target.value = '';
   };
 
@@ -391,21 +417,8 @@ const ProjectForm = () => {
             />
           </Form.Group>
           <Button variant="primary" type="submit" disabled={isLoading}>
-            Submit
+            {isLoading ? 'Please wait' : 'Submit'}
           </Button>
-          <small className="d-block mt-1">
-            {isLoading
-              ? 'Please wait ...'
-              : isSuccess
-              ? 'Created successfully!'
-              : isError
-              ? error.message
-              : isUpdated
-              ? 'Update successfully'
-              : isUpdatedError
-              ? updatedError.message
-              : ''}
-          </small>
         </Form>
       </Container>
     </section>

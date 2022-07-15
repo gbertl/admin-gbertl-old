@@ -18,6 +18,9 @@ const routes = {
   technologyList: '/technologies/',
   categoryList: '/categories',
   screenshotList: '/screenshots/',
+  get screenshotDetail() {
+    return `${this.screenshotList}:id/`;
+  },
 };
 
 export default routes;
