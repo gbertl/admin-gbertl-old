@@ -54,7 +54,7 @@ const ProjectForm = () => {
     async () => {
       if (project) return (await api.getScreenshots(project.screenshots)).data;
     },
-    { enabled: !!project }
+    { enabled: !!project?.screenshots.length }
   );
 
   const [inputs, setInputs] = useState<Inputs>(initialInputs);
