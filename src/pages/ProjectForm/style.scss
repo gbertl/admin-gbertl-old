@@ -12,4 +12,8 @@
     right: 0;
     bottom: 0;
   }
+
+  .form-floating > &__textarea {
+    height: 150px;
+  }
 }

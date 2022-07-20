@@ -228,11 +228,11 @@ const ProjectForm = () => {
           >
             <Form.Control
               as="textarea"
-              rows={3}
               name="description"
               value={inputs.description}
               onChange={handleChange}
               placeholder="Description"
+              className="project-form__textarea"
             />
           </FloatingLabel>
           <FloatingLabel
