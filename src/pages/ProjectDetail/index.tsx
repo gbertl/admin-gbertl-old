@@ -3,7 +3,6 @@ import Container from 'react-bootstrap/Container';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useQuery } from 'react-query';
 
-import './style.scss';
 import * as api from '../../api';
 import { Category, Project, Screenshot, Technology } from '../../typings';
 
@@ -45,7 +44,7 @@ const ProjectDetail = () => {
   return (
     <section className="project-detail">
       <Container>
-        <ListGroup className="project-detail__list">
+        <ListGroup className="mw-700">
           <ListGroup.Item>
             <span className="fw-bold">Title</span> {project?.title}
           </ListGroup.Item>

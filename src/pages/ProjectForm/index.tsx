@@ -211,7 +211,7 @@ const ProjectForm = () => {
   return (
     <section className="project-form mb-5">
       <Container>
-        <Form onSubmit={handleSubmit} className="project-form__form">
+        <Form onSubmit={handleSubmit} className="mw-700">
           <FloatingLabel controlId="title" label="Title" className="mb-3">
             <Form.Control
               type="text"
