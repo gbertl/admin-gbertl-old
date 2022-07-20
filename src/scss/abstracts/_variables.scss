@@ -8,7 +8,7 @@ $utilities: (
       map-merge(
         f.map-deep-get($utilities, 'max-width', 'values'),
         (
-          75: 75%,
+          700: 700px,
         )
       ),
   ),
