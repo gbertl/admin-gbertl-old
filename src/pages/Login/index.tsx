@@ -30,7 +30,11 @@ interface LocationProps {
   };
 }
 
-const Login = () => {
+interface Props {
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Login = ({ setIsLoggedIn }: Props) => {
   const [inputs, setInputs] = useState<IInputs>(initialInputs);
 
   const navigate = useNavigate();
@@ -43,6 +47,7 @@ const Login = () => {
     error,
   } = useMutation<AxiosResponse, AxiosError, UserLogin>(api.login, {
     onSuccess: () => {
+      setIsLoggedIn(true);
       if (location.state?.from) {
         navigate(location.state.from, { replace: true });
       } else {

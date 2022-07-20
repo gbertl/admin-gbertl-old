@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
 
 import ProjectForm from './pages/ProjectForm';
 import Home from './pages/Home';
@@ -9,12 +10,17 @@ import Login from './pages/Login';
 import useSetupInterceptor from './hooks/useSetupInterceptor';
 
 const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   useSetupInterceptor();
 
   return (
-    <Layout>
+    <Layout isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn}>
       <Routes>
-        <Route path={routes.login} element={<Login />} />
+        <Route
+          path={routes.login}
+          element={<Login setIsLoggedIn={setIsLoggedIn} />}
+        />
         <Route path={routes.home} element={<Home />} />
         <Route path={routes.newProject} element={<ProjectForm />} />
         <Route path={routes.projectEdit} element={<ProjectForm />} />
