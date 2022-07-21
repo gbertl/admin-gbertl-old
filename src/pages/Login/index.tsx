@@ -36,29 +36,40 @@ interface Props {
 
 const Login = ({ setIsLoggedIn }: Props) => {
   const [inputs, setInputs] = useState<IInputs>(initialInputs);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation() as LocationProps;
 
   const {
     mutate: login,
-    isLoading,
     isError,
     error,
   } = useMutation<AxiosResponse, AxiosError, UserLogin>(api.login, {
     onSuccess: () => {
       setIsLoggedIn(true);
+      setIsLoading(false);
       if (location.state?.from) {
         navigate(location.state.from, { replace: true });
       } else {
         navigate(routes.home, { replace: true });
       }
     },
+    onError: () => {
+      setIsLoading(false);
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+
     e.preventDefault();
-    login({ username: inputs.username, password: inputs.password });
+
+    if (inputs.username && inputs.password) {
+      login({ username: inputs.username, password: inputs.password });
+    } else {
+      setTimeout(() => setIsLoading(false), 500);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +99,7 @@ const Login = ({ setIsLoggedIn }: Props) => {
                   placeholder="Username"
                   value={inputs.username}
                   onChange={handleChange}
+                  required
                 />
               </FloatingLabel>
               <FloatingLabel
@@ -101,6 +113,7 @@ const Login = ({ setIsLoggedIn }: Props) => {
                   placeholder="Password"
                   value={inputs.password}
                   onChange={handleChange}
+                  required
                 />
               </FloatingLabel>
               <Button
