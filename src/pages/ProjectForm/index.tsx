@@ -196,10 +196,7 @@ const ProjectForm = () => {
   };
 
   const handleNewScreenshots = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewScreenshots([
-      ...newScreenshots,
-      { image: e.target.files?.[0] || '' },
-    ]);
+    setNewScreenshots([...newScreenshots, { image: e.target.value }]);
     e.target.value = '';
   };
 
@@ -362,11 +359,7 @@ const ProjectForm = () => {
                   />
                   <Form.Check.Label>
                     <img
-                      src={
-                        typeof screenshot.image === 'string'
-                          ? screenshot.image
-                          : ''
-                      }
+                      src={screenshot.image}
                       alt="project screenshot"
                       width={200}
                       className="img-fluid"
@@ -396,11 +389,7 @@ const ProjectForm = () => {
                   />
                   <Form.Check.Label>
                     <img
-                      src={
-                        typeof newScreenshot.image !== 'string'
-                          ? URL.createObjectURL(newScreenshot.image)
-                          : ''
-                      }
+                      src={newScreenshot.image}
                       alt="project newScreenshot"
                       width={200}
                       className="img-fluid"
@@ -410,8 +399,9 @@ const ProjectForm = () => {
               </React.Fragment>
             ))}
             <Form.Control
-              type="file"
+              type="text"
               onChange={handleNewScreenshots}
+              placeholder="New URL"
               size="sm"
               className="w-auto mt-1"
             />

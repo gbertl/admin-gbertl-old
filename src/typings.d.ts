@@ -24,7 +24,7 @@ export interface Category {
 
 export interface Screenshot {
   _id: string;
-  image: string | File;
+  image: string;
   priorityOrder?: number;
   project: string;
 }

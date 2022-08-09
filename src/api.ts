@@ -103,11 +103,7 @@ export const createScreenshot = ({
   image,
   project,
 }: Omit<Screenshot, '_id'>) => {
-  const fd = new FormData();
-  fd.append('image', image);
-  fd.append('project', project);
-
-  return axiosPrivate.post(routes.screenshotList, fd);
+  return axiosPrivate.post(routes.screenshotList, { image, project });
 };
 
 export const deleteScreenshot = async (id: string) =>
